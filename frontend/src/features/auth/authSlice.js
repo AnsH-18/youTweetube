@@ -62,7 +62,7 @@ const loginUser = createAsyncThunk(
           })
 
           const data = await response.json()
-          console.log("reached 2")
+          console.log(data)
           return data
     }
 )

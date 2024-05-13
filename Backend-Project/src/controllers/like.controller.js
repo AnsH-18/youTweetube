@@ -115,42 +115,67 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     const user = req.user
 
     const likedVideos = await Like.aggregate([
-        {$match: {likedBy: mongoose.Types.ObjectId(user?._id)}},
+        {$match: {
+            likedBy: new mongoose.Types.ObjectId(user?._id),
+            video: { $exists: true },
+          },
+        },
         {$lookup: {
-            from : "video",
+            from: "videos",
             localField: "video",
             foreignField: "_id",
             as: "likedVideo",
-            pipeline: [
-                {$lookup: {
-                    from: "user",
-                    localField: "owner",
-                    foreignField: "_id",
-                    as: "author",
-                    pipeline: [
-                        {$project: {
-                            userName: 1,
-                            fullName: 1,
-                            avatar: 1
-                        }}
-                    ]
-                }},
-            ]
-        }},
-        {$group: {
-            user: "$owner",
-            likedVideos: {
-                $push: {
-                    video: "$likedVideo._id",
-                    videoFile: "$likedVideo._videoFile",
-                    thumbnail: "$likedVideo.thumbnail",
-                    owner: "$author",
-                    duration: "$likedVideo.duration",
-                    views: "$likedVideo.views"
-                }
-            }
-        }}
-    ])
+            pipeline: [{
+                $lookup: {
+                  from: "users",
+                  localField: "owner",
+                  foreignField: "_id",
+                  as: "author",
+                  pipeline: [{
+                      $project: {
+                        userName: 1,
+                        fullName: 1,
+                        avatar: 1,
+                      },
+                    },
+                  ],
+                },
+              }
+            ],
+          },
+        },
+        {$unwind: "$likedVideo"},
+       {$group: {
+        _id: "$likedBy",
+        videos: {$push: "$likedVideo"}
+       }}
+      ]);
+      
+      
+        // {$group: {
+        //     _id: "$likedBy",
+        //     likedVideos: {
+        //         $push: {
+        //             video: "$likedVideo._id",
+        //             videoFile: "$likedVideo.videoFile",
+        //             thumbnail: "$likedVideo.thumbnail",
+        //             owner: "$author",
+        //             duration: "$likedVideo.duration",
+        //             views: "$likedVideo.views"
+        //         }
+        //     }
+        // }}
+  
+
+    // const likedVideos = await Like.aggregate([
+    //     {$match: {likedBy: new mongoose.Types.ObjectId(user?._id), video: {$exists: true}}},
+    //     {$lookup: {
+    //         from: "videos",
+    //         localField: "video",
+    //         foreignField: "_id",
+    //         as: "likedVideo"
+    //     }}
+    // ])
 
     return res.status(200).json(
         new ApiResponse(200, likedVideos, "Liked Videos Fetched Successfully")

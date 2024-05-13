@@ -172,7 +172,8 @@ const getVideosofAUser = asyncHandler(async(req, res) => {
                     avatar: 1
                 }
             }]
-        }},{
+        }},
+        {
             $group:{
                 _id:"$owner" ,
                 videoList: {

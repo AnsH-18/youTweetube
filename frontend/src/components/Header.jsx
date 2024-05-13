@@ -8,26 +8,28 @@ function Header() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const userLoggedIn = useSelector(state => state.auth)
-  console.log(userLoggedIn)
 
   return (
     <div className=' bg-[#121212] fixed top-0 left-0 right-0 h-20 border-gray-400 border-b-2 text-white flex justify-between items-center pr-8 pl-8 z-10'>
       <div>logo</div>
-      <div>
+      <div className='sm:block hidden'>
         <input placeholder='Search' className='h-10 w-[300px] bg-inherit border-gray-400 border-2 pl-5'></input>
       </div>
       {userLoggedIn.status
       ? 
-      <div className='flex gap-7'>
-        <button className='border-2 border-black px-2 py-1 rounded bg-purple-600 text-black font-bold'>{userLoggedIn.data.userName}</button>
+      <div className=' sm:block hidden'>
+        <button className='border-2 border-black px-2 py-1 rounded bg-purple-600 text-black font-bold mr-4'>{userLoggedIn.data.userName}</button>
         <button onClick={() => dispatch(logoutUser())}>Log out</button>
       </div>
       :
-      <div className='flex gap-7'>
-        <button onClick={() => navigate("/login")}>Login</button>
+      <div className='sm:block hidden'>
+        <button onClick={() => navigate("/login")} className='mr-4'>Login</button>
         <button onClick={() => navigate("/register")} className='bg-purple-600 h-9 px-4 shadow shadow-gray-700 text-black font-bold'>Sign Up</button>
       </div>}
-      
+      <div className='sm:hidden flex gap-2'>
+        <div>search</div>
+        <div>hamburger</div>
+      </div>
     </div>
   )
 }

@@ -74,12 +74,11 @@ const getChannelSubscribers = asyncHandler(async (req, res) => {
                     }
                 }]
             }
-        },{
-            $project: {
-                channel: 1,
-                subscriberDetails: 1
-            }
-        }
+        },{$unwind: "$subscriberDetails"},
+        {$group: {
+            _id: "$channel",
+            subscriberDetails: {$push: "$subscriberDetails"}
+        }}
        
     ])
 

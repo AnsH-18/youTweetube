@@ -1,29 +1,24 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllVideos } from '../features/auth/videoSlice';
+import Video from '../components/Video';
 
 function VideoGrid() {
+  const dispatch = useDispatch();
+  const videos = useSelector(state => state.video?.data);
 
-  const [videos, setVideos] = useState([])
-  const fetchvideos = () => {
-    try {
-      const url = "http://localhost:8001/api/v1/video/get-all"
-      fetch(url,  {
-        method: 'GET',
-        credentials: "include"
-        
-      })
-      .then(res => res.json())
-      .then(data => console.log(data))
-    } catch (error) {
-      console.log(error)
-    }
-  }
- 
+useEffect(() => {
+  dispatch(getAllVideos())
+}, [dispatch])
 
+console.log(videos)
   return ( 
-    <div className=' text-white   mt-20 ml-56 h-full'>
-      <button className='' onClick={fetchvideos}>Click me</button>
+    <div className='ml-2 text-white mt-20 sm:ml-56 grid md:grid-cols-2 lg:grid-cols-3 grid-cols-1 gap-x-4 gap-y-4 p-2 '>
+      {videos?.map((video) => {
+        return <Video {...video}></Video>
+      })}
     </div>
-  )
+  );
 }
 
-export default VideoGrid
+export default VideoGrid;

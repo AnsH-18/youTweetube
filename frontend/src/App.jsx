@@ -7,6 +7,9 @@ import Protected from './Routes/Protected'
 import Test from './pages/Test'
 import Home from './pages/Home'
 import VideoGrid from './components/VideoGrid'
+import LikedVideos from './pages/LikedVideos'
+import Subscribers from './pages/Subscribers'
+import WatchHistory from './pages/History'
 
 
 function App() {
@@ -17,6 +20,9 @@ function App() {
       <Routes>
         <Route path='/' element={<Home/>}>
           <Route index element={<VideoGrid/>}></Route>
+          <Route path='likedVideos' element={<LikedVideos/>}></Route>
+          <Route path='watchHistory' element={<WatchHistory/>}></Route>
+          <Route path='subscribersList' element={<Subscribers/>}></Route>
         </Route>
         <Route path='/register' element= {<Register/>}></Route>
         <Route path='/login' element= {<Login/>}></Route>

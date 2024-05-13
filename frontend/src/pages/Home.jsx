@@ -6,8 +6,7 @@ import {Outlet} from 'react-router-dom'
 
 function Home() {
 
-    const userInfo = useSelector(state => state.auth.data)
-    console.log("info: ",document.cookie)
+  const userInfo = useSelector(state => state.auth.data)
 
   return (
   
