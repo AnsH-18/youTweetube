@@ -308,13 +308,13 @@ const changeCoverImage = asyncHandler(async(req, res) => {
 
 const getChannelDetails = asyncHandler(async(req, res) => {
     const {userName} = req.query
-
+    // console.log(userName)
     if(!userName.trim()){
         throw new ApiError(404, "Channel Not Found")
     }
    
     const user = await User.findOne({userName: userName.toLowerCase()})
-    console.log(userName.toLowerCase().trim() === user.userName);
+    // console.log(userName.toLowerCase().trim() === user.userName);
 
     const channelDetails = await User.aggregate([
         {

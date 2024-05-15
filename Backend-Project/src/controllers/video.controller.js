@@ -32,11 +32,11 @@ const uploadVideo = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Internal Server Error While uplaoding the files")
     }
 
-    console.log(videoFile, thumbnail)
+
     const video = await Video.create({
         videoFile: videoFile.url,
         title,
-        duration,
+        duration: videoFile.duration,
         thumbnail: thumbnail.url,
         owner,
         description
@@ -45,7 +45,7 @@ const uploadVideo = asyncHandler(async (req, res) => {
     if(!video){
         throw new ApiError(404, "Error while Uploading video")
     }
-    console.log(video)
+    // console.log(video)
     return res.status(200).json(
         new ApiResponse(200, video, "Video Uploaded Successfully")
     )
@@ -59,11 +59,53 @@ const getVideoById = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Video Does not found")
     }
 
-    const video = await Video.findOne({_id: videoId})
+
+    const video = await Video.aggregate([
+        {$match: {_id: new mongoose.Types.ObjectId(videoId)}},
+        {$lookup: {
+            from: "users",
+            localField: "owner",
+            foreignField: "_id",
+            as: "author",
+            pipeline: [
+                {$project: {
+                    userName: 1,
+                    fullName: 1,
+                    _id: 1,
+                    avatar: 1
+                }}
+            ]
+        }},
+        {$lookup: {
+            from: "likes",
+            localField: "_id",
+            foreignField: "video",
+            as: "likes"
+        }},
+        {$addFields: {
+            likesCount : {
+                $size: "$likes"
+            }
+        }},
+        {$project: {
+            author: 1,
+            _id: 1,
+            videoFile: 1,
+            thumbnail: 1,
+            duration: 1,
+            views: 1,
+            likesCount: 1,
+            title: 1,
+            description: 1,
+            createdAt: 1
+        }}
+    ]) 
+    // console.log(video)
 
     if(!video){
         throw new ApiError(402, "Video does not exists")
     }
+
 
     return res.status(200).json(
         new ApiResponse(200, video, "Video fetched successfully")
@@ -247,3 +289,7 @@ export {
     deleteVideo,
     getAllVideos
 }
+
+const addViewTOaVideo = (asyncHandler(async(req, res) => {
+
+}))

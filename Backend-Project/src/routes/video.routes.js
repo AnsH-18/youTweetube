@@ -4,7 +4,7 @@ import { deleteVideo, getAllVideos, getVideoById, getVideosofAUser, togglePublis
 import { VerifyJWT } from "../middlewares/auth.middleware.js";
 
 const videoRouter = Router()
-videoRouter.use(VerifyJWT)
+
 
 videoRouter.post("/upload-video", 
 upload.fields([
@@ -15,13 +15,13 @@ upload.fields([
         name: "thumbnail",
         maxCount: 1
     }
-]), uploadVideo)
+]),VerifyJWT, uploadVideo)
 
-videoRouter.get("/get/:userid",  getVideosofAUser)
-videoRouter.post("/toggle-publish-status", togglePublishedStatus)
-videoRouter.patch("/update-video",upload.single("thumbnail"), updateVideo)
-videoRouter.get("/videos/:videoid", getVideoById)
-videoRouter.delete("/delete/:videoId", deleteVideo)
+videoRouter.get("/get/:userid",VerifyJWT,  getVideosofAUser)
+videoRouter.post("/toggle-publish-status",VerifyJWT, togglePublishedStatus)
+videoRouter.patch("/update-video",upload.single("thumbnail"),VerifyJWT, updateVideo)
+videoRouter.get("/videos/:videoid",VerifyJWT, getVideoById)
+videoRouter.delete("/delete/:videoId",VerifyJWT, deleteVideo)
 videoRouter.get("/get-all", getAllVideos)
 
 export {videoRouter}

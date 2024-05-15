@@ -1,7 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    data: []
+    data: [],
+    empty: true
 }
 
 const getChannelSubscribers = createAsyncThunk(
@@ -15,8 +16,12 @@ const getChannelSubscribers = createAsyncThunk(
             credentials: "include"
         })
         const data = await response.json()
-        console.log(data.data[0])
+       if(data.data[0]){
         return data.data[0].subscriberDetails
+       }
+       else{
+        return []
+       }
     }
 )
 
@@ -28,6 +33,7 @@ const subscribersSlice = createSlice({
         builder
         .addCase(getChannelSubscribers.fulfilled, (state, action) => {
             state.data = action.payload
+            state.empty = action.payload.length === 0 ? true : false
         })
     }
 })

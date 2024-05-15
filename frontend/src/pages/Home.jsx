@@ -10,7 +10,7 @@ function Home() {
 
   return (
   
-    <div className='h-[2000px] '>
+    <div className='h-[2000px]'>
         <Header/>
         <Sidebar/>
         <Outlet/>
