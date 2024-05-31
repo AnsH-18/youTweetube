@@ -34,7 +34,8 @@ const getVideoComments = asyncHandler(async (req, res) => {
         {$project: {
             video: 1,
             content: 1,
-            author: 1
+            author: 1,
+            createdAt: 1
         }}
     ])
 
@@ -52,6 +53,8 @@ const addComment = asyncHandler(async (req, res) => {
     const user = req.user
     const {content} = req.body
 
+    console.log(req)
+
     if(!videoId || !content){
         throw new ApiError(402, "Video and Commnet Fields are required")
     }
@@ -66,8 +69,34 @@ const addComment = asyncHandler(async (req, res) => {
         throw new ApiError(402, "Comment cannot be added")
     }
 
+    const comment = await Comment.aggregate([
+        {$match: {video: new mongoose.Types.ObjectId(newCommnet?._id)}},
+        {$lookup: {
+            from : "users",
+            localField: "owner",
+            foreignField: "_id",
+            as: "author",
+            pipeline: [
+                {$project: {
+                    userName: 1,
+                    fullName: 1,
+                    avatar: 1
+                }}
+            ]
+        }},
+        {$project: {
+            video: 1,
+            content: 1,
+            author: 1,
+            createdAt: 1
+        }}
+    ])
+
+    
+
+
     return res.status(200).json(
-        new ApiResponse(200, {}, "New comment added successfully")
+        new ApiResponse(200, comment, "New comment added successfully")
     )
 })
 
