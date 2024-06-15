@@ -5,6 +5,7 @@ import asyncHandler from "../utils/AsyncHandler.js";
 import uploadToCloudinary from "../utils/cloudinary.js";
 import { User } from "../models/user.model.js";
 import mongoose, { Schema } from "mongoose";
+import { Like } from "../models/like.model.js";
 
 const uploadVideo = asyncHandler(async (req, res) => {
     const {title, duration, description} = req.body
@@ -54,6 +55,7 @@ const uploadVideo = asyncHandler(async (req, res) => {
 const getVideoById = asyncHandler(async (req, res) => {
     
     const {videoId} = req.query
+    const user = req.user
 
     if(!videoId){
         throw new ApiError(404, "Video Does not found")
@@ -101,6 +103,7 @@ const getVideoById = asyncHandler(async (req, res) => {
         }}
     ]) 
     // console.log(video)
+    const checkLike = await Like.findOne({video: videoId, likedBy: user?._id})
 
     if(!video){
         throw new ApiError(402, "Video does not exists")
@@ -108,7 +111,7 @@ const getVideoById = asyncHandler(async (req, res) => {
 
 
     return res.status(200).json(
-        new ApiResponse(200, video, "Video fetched successfully")
+        new ApiResponse(200, {video, isliked: checkLike?true:false}, "Video fetched successfully")
     )
 })
 
@@ -289,6 +292,7 @@ export {
     deleteVideo,
     getAllVideos
 }
+
 
 const addViewTOaVideo = (asyncHandler(async(req, res) => {
 

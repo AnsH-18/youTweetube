@@ -16,6 +16,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
     const comments = await Comment.aggregate([
         {$match: {video: new mongoose.Types.ObjectId(videoId)}},
+        
         {$lookup: {
             from : "users",
             localField: "owner",
@@ -39,12 +40,19 @@ const getVideoComments = asyncHandler(async (req, res) => {
         }}
     ])
 
+    const totalComments = await Comment.aggregate([
+        {$match: {video: new mongoose.Types.ObjectId(videoId)}},
+        { $count: "total_count" },
+        {$unwind: "$total_count"}
+    ])
+
+
     if(!comments){
         throw new ApiError(402, "Comments cannot be fetched")
     }
 
     return res.status(200).json(
-        new ApiResponse(200, comments, "Commnents fetched successfully")
+        new ApiResponse(200, {data: comments, totalCount:   totalComments}, "Commnents fetched successfully")
     )
 })
 
@@ -70,7 +78,7 @@ const addComment = asyncHandler(async (req, res) => {
     }
 
     const comment = await Comment.aggregate([
-        {$match: {video: new mongoose.Types.ObjectId(newCommnet?._id)}},
+        {$match: {_id: new mongoose.Types.ObjectId(newCommnet?._id)}},
         {$lookup: {
             from : "users",
             localField: "owner",
@@ -80,15 +88,10 @@ const addComment = asyncHandler(async (req, res) => {
                 {$project: {
                     userName: 1,
                     fullName: 1,
-                    avatar: 1
+                    avatar: 1,
+                    _id: 1
                 }}
             ]
-        }},
-        {$project: {
-            video: 1,
-            content: 1,
-            author: 1,
-            createdAt: 1
         }}
     ])
 

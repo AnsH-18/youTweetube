@@ -1,11 +1,25 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { timeAgo } from '../helper/formatdate'
 import ThumbUpAltOutlinedIcon from '@mui/icons-material/ThumbUpAltOutlined';
 import CreateNewFolderOutlinedIcon from '@mui/icons-material/CreateNewFolderOutlined';
 import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
-
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleVideoLike,checkLikeStatus } from '../features/auth/likeSlice';
 
 function VideoInfo(props) {
+  const [videoLike, setVideoLike] = useState(props.liked)
+  const dispatch = useDispatch()
+
+console.log(props)
+  const patchVideoLike = (e) => {
+    setVideoLike(prev => !prev)
+    dispatch(toggleVideoLike(props.video?._id))
+
+  }
+
+  // console.log(videoLike)
   return (
     <div className='p-3 border-[1px] rounded-lg mb-3'>
     <p className= 'text-lg font-bold'>{props.video?.title}</p>
@@ -14,8 +28,9 @@ function VideoInfo(props) {
       <p>{timeAgo(props.video?.createdAt)}</p>
     </div>
     <div className='flex justify-between pr-5 mb-6'>
-      <div className=' h-8 w-20 border border-[1px] rounded text-gray-200 hover:bg-gray-700 border-gray-100 flex items-center px-5 gap-2'>
-        <ThumbUpAltOutlinedIcon fontSize='small'/>
+      <div onClick={patchVideoLike} className=' h-8 w-20  border-[1px] rounded text-gray-200  border-gray-100 flex items-center px-5 gap-2'>
+        {videoLike ?  <ThumbUpIcon fontSize='small' />:<ThumbUpAltOutlinedIcon fontSize='small' /> }
+       
         <p >{props.video?.likesCount}</p>
       </div>
       <div>

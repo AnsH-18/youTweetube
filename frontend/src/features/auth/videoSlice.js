@@ -3,7 +3,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 const initialState = {
     data: [],
     video: null,
-    empty: true
+    empty: true,
+    videoLiked: false
 }
 
 const getAllVideos = createAsyncThunk(
@@ -49,7 +50,7 @@ const fetchVideoById = createAsyncThunk(
             credentials: "include"
         })
         const data = await response.json()
-        console.log(data.data)
+        console.log(data.data.isliked)
         return data
     }
 )
@@ -74,7 +75,8 @@ const videoSlice = createSlice({
             state.empty = action.payload.length === 0 ? true : false
         })
         .addCase(fetchVideoById.fulfilled, (state, action) => {
-            state.video = action.payload.data[0]
+            state.video = action.payload.data.video[0]
+            state.videoLiked = action.payload.data.isliked
         })
     }
 })

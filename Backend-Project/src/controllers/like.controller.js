@@ -22,7 +22,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
             throw new ApiError(401, "Cannot unlike this video")
         }
         return res.status(200).json(
-            new ApiResponse(200, {}, "Like removed Successfully")
+            new ApiResponse(200, false, "Like removed Successfully")
         )
     }
     else{
@@ -35,7 +35,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
             throw new ApiError(402, "Cannot like this video")
         }
         return res.status(200).json(
-            new ApiResponse(200, {}, "Like added Successfully")
+            new ApiResponse(200, true, "Like added Successfully")
         )
     }
 
@@ -182,9 +182,25 @@ const getLikedVideos = asyncHandler(async (req, res) => {
     )
 })
 
+const getVideoLikeStatus = asyncHandler(async (req, res) => {
+    const {videoId, userId} = req.query
+
+    const checkLike = await Like.findOne({video: videoId, likedBy: userId})
+
+    if(!checkLike){
+        return res.status(200). json(
+            new ApiResponse(200, false, "not liked by this user")
+        )
+    }
+    return res.status(200). json(
+        new ApiResponse(200, true, "liked by this user")
+    )
+})
+
 export {
     toggleCommentLike,
     toggleVideoLike,
     toggleTweetLike,
-    getLikedVideos
+    getLikedVideos,
+    getVideoLikeStatus
 }
